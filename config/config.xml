@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<config>
+    <add key="X4_EXE_PATH" value="%PROGRAMFILES(X86)%\Steam\steamapps\common\X4 Foundations\X4.exe"/>
+    <add key="X4_PATH" value="%PROGRAMFILES(X86)%\Steam\steamapps\common\X4 Foundations"/>
+</config>

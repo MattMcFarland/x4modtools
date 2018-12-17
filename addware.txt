@@ -1,0 +1,3 @@
+Usage
+-----
+addware [path-to-your-mod] []
