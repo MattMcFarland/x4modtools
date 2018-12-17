@@ -48,15 +48,87 @@ Write-Host "UNPACKED_PATH: $UNPACKED_PATH"
 
 
 
-function Publish-WareMacro {
+function Get-ProductionMacroName {
   param(
     [string]$WareId
   )
+  return  "$($MOD_PREFIX)_prod_gen_$($WareId)_macro"
+}
+
+function Get-WareMacroName {
+  param(
+    [string]$WareId
+  )
+  return "$($MOD_PREFIX)_ware_$($WareId)_macro"
+}
+
+
+function Resolve-WareMacroPath {
+  param(
+    [Parameter(Mandatory=$true)]
+    [ValidateSet('FromModule','FromUnpacked')]
+    [string]$Source,    
+    [string]$WareId
+  )
+  $wareMacroName = Get-WareMacroName -WareId $WareId
+  switch ($Source) {
+    'FromModule' {
+      return Join-Path -Path $MOD_PATH -ChildPath "assets\wares\macros\$wareMacroName.xml"
+    }
+    'FromUnpacked' {
+      return Join-Path -Path $UNPACKED_PATH -ChildPath "assets\wares\macros\ware_default_macro.xml"
+    }
+  }
+}
+
+
+function Resolve-ProductionModuleIconFromPath {
+  param(
+    [Parameter(Mandatory=$true)]
+    [ValidateSet('FromModule','FromUnpacked')]
+    [string]$Source,
+    [string]$WareId,
+    [string]$CloneProductionModuleFrom
+  )
+  Switch ($Source) {
+    'FromModule' {
+      $prodMacroName = Get-ProductionMacroName -WareId $WareId
+      return Join-Path -Path $MOD_PATH -ChildPath "assets\fx\gui\textures\stationmodules\$prodMacroName.dds"
+    }
+    'FromUnpacked' {
+      return Join-Path -Path $UNPACKED_PATH -ChildPath "assets\fx\gui\textures\stationmodules\$($CloneProductionModuleFrom)_macro.gz"
+    }
+  }
+}
+
+function Resolve-ProductionModuleFromPath {
+  param(
+    [Parameter(Mandatory=$true)]
+    [ValidateSet('FromModule','FromUnpacked')]
+    [string]$Source,
+    [string]$WareId,
+    [string]$CloneProductionModuleFrom
+  )
+  Switch ($Source) {
+    'FromModule' {
+      $prodMacroName = Get-ProductionMacroName -WareId $WareId
+      return Join-Path -Path $MOD_PATH -ChildPath "assets\structures\production\macros\$prodMacroName.xml"  
+    }
+    'FromUnpacked' {
+      return Join-Path -Path $UNPACKED_PATH -ChildPath "assets\structures\production\macros\$($CloneProductionModuleFrom)_macro.xml"
+    }
+  }  
+}
+
+function Publish-WareMacro {
+  param(
+    [string]$WareId 
+  )
 
   # Create Wares Macro
-  $wareMacroName = "$($MOD_PREFIX)_ware_$($WareId)_macro"
-  $sourceWareMacroPath = Join-Path -Path $UNPACKED_PATH -ChildPath "assets\wares\macros\ware_default_macro.xml"
-  $destinationWareMacroPath = Join-Path -Path $MOD_PATH -ChildPath "assets\wares\macros\$wareMacroName.xml"
+  $wareMacroName = Get-WareMacroName -WareId $WareId
+  $sourceWareMacroPath = Resolve-WareMacroPath -Source "FromUnpacked"
+  $destinationWareMacroPath = Resolve-WareMacroPath -Source "FromModule" -WareId $WareId 
   
   Write-Host "Publish $destinationWareMacroPath"
   New-Item -Path $destinationWareMacroPath -Force
@@ -68,8 +140,9 @@ function Publish-WareMacro {
 
   # save the updated xml
   $newWareMacroXml.save($destinationWareMacroPath)
-
 }
+
+
 
 function Publish-ProductionMacro {
   param(
@@ -77,9 +150,9 @@ function Publish-ProductionMacro {
     [System.Xml.XmlDocument]$Ware,
     [string]$CloneProductionModuleFrom
   )
-  $prodMacroName = "$($MOD_PREFIX)_prod_gen_$($WareId)_macro"
-  $sourcePath = Join-Path -Path $UNPACKED_PATH -ChildPath "assets\structures\production\macros\$($CloneProductionModuleFrom)_macro.xml"
-  $destinationPath = Join-Path -Path $MOD_PATH -ChildPath "assets\structures\production\macros\$prodMacroName.xml"
+  $prodMacroName = Get-ProductionMacroName -WareId $WareId
+  $sourcePath = Resolve-ProductionModuleFromPath -Source "FromUnpacked" -CloneProductionModuleFrom $CloneProductionModuleFrom
+  $destinationPath = Resolve-ProductionModuleFromPath -Source "FromModule" -WareId $WareId
 
   Write-Host "Publish $destinationPath"
   New-Item -Path $destinationPath -Force
@@ -104,9 +177,8 @@ function Publish-ProductionIcon {
     [string]$WareId,
     [string]$CloneProductionModuleFrom
   )
-  $prodMacroName = "$($MOD_PREFIX)_prod_gen_$($WareId)_macro"
-  $sourcePath = Join-Path -Path $UNPACKED_PATH -ChildPath "assets\fx\gui\textures\stationmodules\$($CloneProductionModuleFrom)_macro.gz"
-  $destinationPath = Join-Path -Path $MOD_PATH -ChildPath "assets\fx\gui\textures\stationmodules\$prodMacroName.dds"
+  $sourcePath = Resolve-ProductionModuleIconFromPath -Source "FromUnpacked" -CloneProductionModuleFrom $CloneProductionModuleFrom
+  $destinationPath = Resolve-ProductionModuleIconFromPath -Source "FromModule" -WareId $WareId
 
   Write-Host "Publish $destinationPath"
   New-Item -Path $destinationPath -Force
@@ -125,7 +197,7 @@ function New-XmlCollection {
   $root = $doc.CreateNode("element", $CollectionName, $null)
   $Doc.AppendChild($root)
   $Doc.Save($Path)
-  return [xml]$Doc
+  return $([xml]$Doc)
 }
 function Update-Index {
   param(
@@ -179,8 +251,8 @@ function Update-Manifest {
     [string]$WareId,
     [System.Xml.XmlDocument]$Ware
   )
-  $prodMacroName = "$($MOD_PREFIX)_prod_gen_$($WareId)_macro"
-  $wareMacroName = "$($MOD_PREFIX)_ware_$($WareId)_macro"
+  $prodMacroName = Get-ProductionMacroName -WareId $WareId
+  $wareMacroName = Get-WareMacroName -WareId $WareId
 
   $relIndexMacrosXmlPath = "index\macros.xml"
   $relIconsXmlPath = "libraries\icons.xml"
@@ -209,7 +281,9 @@ function Update-Manifest {
   $iconsXml.Save($iconsXmlPath)
 }
 
+function Update-Modules {
 
+}
 
 
 $addWares = (Select-XML -Xml $addwaresXml -XPath '//generation/*')
@@ -233,10 +307,14 @@ foreach ($addWare in $addWares) {
   # $attrib.Value = $id
 
   # Write-Host "final: $($final.InnerXml)"
-  Publish-WareMacro -id $id -Ware $final
+  Publish-WareMacro -WareId $id
   Publish-ProductionMacro -WareId $id -CloneProductionModuleFrom $cloneProductionModuleFrom -Ware $final
   Publish-ProductionIcon -WareId $id -CloneProductionModuleFrom $cloneProductionModuleFrom
   Update-Manifest -WareId $id 
+  #Update-Modules -WareId $id -CloneProductionModuleFrom $cloneProductionModuleFrom -Ware $final
+  #Update-ModuleGroups -WareId $id -CloneProductionModuleFrom $cloneProductionModuleFrom -Ware $final
+
+  #Update-Baskets -WareId $id -CloneProductionModuleFrom $cloneProductionModuleFrom -Ware $final
   
 }
 
