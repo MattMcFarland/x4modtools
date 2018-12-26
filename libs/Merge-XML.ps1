@@ -50,7 +50,7 @@ function Import-Nodes()
 	if($node.LocalName -ne "#text")
 	{
 		$path = Get-NodePath $node
-		write-verbose "path : $path"
+		
 		try
 		{
 			$nodeCheck = $overrideXML | select-xml -xPath "$path" 2> $null

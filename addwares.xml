@@ -4,7 +4,7 @@
     <prefix value="xcg2"/>
     <gamepath value="%PROGRAMFILES(X86)%\Steam\steamapps\common\X4 Foundations"/>
     <modpath value="extensions\XCG2"/>
-    <unpackedPath value="unpacked-132"/>
+    <unpackedPath value="unpacked-150"/>
     <defaults>
       <ware>
         <price min="735" average="865" max="994" />
@@ -35,6 +35,20 @@
           </effects>
         </production>
       </ware>
-    </addware>    
+    </addware>
+    <addware id="plastic" cloneProductionModuleFrom="prod_gen_refinedmetals">
+      <ware name="Plastic" group="refined" transport="container" volume="32" tags="container economy">
+        <price min="735" average="865" max="994" />
+        <production time="300" amount="60" method="default" name="Plastic">
+          <primary>
+            <ware ware="energycells" amount="50" />
+            <ware ware="silicon" amount="80" />
+          </primary>
+          <effects>
+            <effect type="work" product="0.2" />
+          </effects>
+        </production>
+      </ware>
+    </addware>
   </generation>
 </addwares>

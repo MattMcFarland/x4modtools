@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Objects>
+  <Object Type="System.Xml.XmlElement">
+    <Property Name="Name" Type="System.String">index</Property>
+    <Property Name="LocalName" Type="System.String">index</Property>
+    <Property Name="NamespaceURI" Type="System.String">
+    </Property>
+    <Property Name="Prefix" Type="System.String">
+    </Property>
+    <Property Name="NodeType" Type="System.Xml.XmlNodeType">Element</Property>
+    <Property Name="ParentNode" Type="System.Xml.XmlDocument">System.Xml.XmlDocument</Property>
+    <Property Name="OwnerDocument" Type="System.Xml.XmlDocument">System.Xml.XmlDocument</Property>
+    <Property Name="IsEmpty" Type="System.Boolean">True</Property>
+    <Property Name="Attributes" Type="System.Xml.XmlAttributeCollection" />
+    <Property Name="HasAttributes" Type="System.Boolean">False</Property>
+    <Property Name="SchemaInfo" Type="System.Xml.XmlName">System.Xml.XmlName</Property>
+    <Property Name="InnerXml" Type="System.String">
+    </Property>
+    <Property Name="InnerText" Type="System.String">
+    </Property>
+    <Property Name="NextSibling" Type="System.Xml.XmlNode" />
+    <Property Name="PreviousSibling" Type="System.Xml.XmlNode" />
+    <Property Name="Value" Type="System.String" />
+    <Property Name="ChildNodes" Type="System.Xml.XmlChildNodes" />
+    <Property Name="FirstChild" Type="System.Xml.XmlNode" />
+    <Property Name="LastChild" Type="System.Xml.XmlNode" />
+    <Property Name="HasChildNodes" Type="System.Boolean">False</Property>
+    <Property Name="IsReadOnly" Type="System.Boolean">False</Property>
+    <Property Name="OuterXml" Type="System.String">&lt;index /&gt;</Property>
+    <Property Name="BaseURI" Type="System.String">
+    </Property>
+    <Property Name="PreviousText" Type="System.Xml.XmlNode" />
+  </Object>
+</Objects>
